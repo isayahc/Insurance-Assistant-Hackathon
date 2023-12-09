@@ -5,10 +5,14 @@ from langchain.document_loaders import OnlinePDFLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.prompts import PromptTemplate
 
+# from langhchain.llms import openai
+from langchain.llms import OpenAI
+
 text_splitter = CharacterTextSplitter(chunk_size=350, chunk_overlap=0)
 
 from langchain.llms import HuggingFaceHub
 flan_ul2 = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta", model_kwargs={"temperature":0.1, "max_new_tokens":300})
+# flan_ul2 = OpenAI()
 
 from langchain.embeddings import HuggingFaceHubEmbeddings
 embeddings = HuggingFaceHubEmbeddings()
@@ -81,12 +85,12 @@ with gr.Blocks(css=css) as demo:
         gr.HTML(title)
         
         with gr.Column():
-            pdf_doc = gr.File(label="Load a pdf", file_types=['.pdf'], type="file")
+            pdf_doc = gr.File(label="Load a pdf", file_types=['.pdf'], type="filepath") #try filepath for type if binary does not work
             with gr.Row():
                 langchain_status = gr.Textbox(label="Status", placeholder="", interactive=False)
                 load_pdf = gr.Button("Load pdf to langchain")
         
-        chatbot = gr.Chatbot([], elem_id="chatbot").style(height=350)
+        chatbot = gr.Chatbot([], elem_id="chatbot") #.style(height=350)
         with gr.Row():
             question = gr.Textbox(label="Question", placeholder="Type your question and hit Enter ")
     load_pdf.click(loading_pdf, None, langchain_status, queue=False)    
