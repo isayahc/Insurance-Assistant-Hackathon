@@ -14,6 +14,8 @@ from langchain.llms import HuggingFaceHub
 flan_ul2 = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta", model_kwargs={"temperature":0.1, "max_new_tokens":300})
 # flan_ul2 = OpenAI()
 
+global qa
+
 from langchain.embeddings import HuggingFaceHubEmbeddings
 embeddings = HuggingFaceHubEmbeddings()
 
