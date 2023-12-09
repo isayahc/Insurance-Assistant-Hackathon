@@ -24,14 +24,14 @@ query_engine = index.as_query_engine()
 # Define the query text
 query_text = "How does the weather affect crop growth?"
 
-data = query_engine.query(query)
+data = query_engine.query(query_text)
 
 # Preprocess the query text
-query_builder = QueryBuilder(service_context)
-query = query_builder.build_query(query_text)
+# query_builder = QueryBuilder(service_context)
+# query = query_builder.build_query(query_text)
 
-# Search for similar documents or retrieve relevant information
-results = index.search(query)
+# # Search for similar documents or retrieve relevant information
+# results = index.search(query)
 
 # Process the search results
 for result in results:
