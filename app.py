@@ -85,7 +85,7 @@ with gr.Blocks(css=css) as demo:
         gr.HTML(title)
         
         with gr.Column():
-            pdf_doc = gr.File(label="Load a pdf", file_types=['.pdf'], type="binary") #try filepath for type if binary does not work
+            pdf_doc = gr.File(label="Load a pdf", file_types=['.pdf'], type="filepath") #try filepath for type if binary does not work
             with gr.Row():
                 langchain_status = gr.Textbox(label="Status", placeholder="", interactive=False)
                 load_pdf = gr.Button("Load pdf to langchain")
