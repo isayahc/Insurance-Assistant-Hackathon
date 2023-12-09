@@ -1,5 +1,11 @@
 from llama_index import SimpleDirectoryReader, VectorStoreIndex, ServiceContext
 from llama_index.text_splitter import SentenceSplitter
+import dotenv
+import os
+
+dotenv.load_dotenv()
+
+
 
 documents = SimpleDirectoryReader("./data").load_data()
 
@@ -10,10 +16,15 @@ index = VectorStoreIndex.from_documents(
     documents, service_context=service_context
 )
 
-from llama_index.query import QueryBuilder
+query_engine = index.as_query_engine()
+
+
+# from llama_index.query import QueryBuilder
 
 # Define the query text
 query_text = "How does the weather affect crop growth?"
+
+data = query_engine.query(query)
 
 # Preprocess the query text
 query_builder = QueryBuilder(service_context)

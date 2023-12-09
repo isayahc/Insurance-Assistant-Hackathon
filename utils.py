@@ -2,6 +2,7 @@ import requests
 import os
 from typing import Optional
 from urllib.parse import urlparse, unquote
+import gdrive
 
 def get_filename_from_url(url: str, cd: Optional[str]) -> str:
     """
