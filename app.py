@@ -37,7 +37,7 @@ def pdf_changes(pdf_doc):
     
     {context}
     
-    Question: {question}
+    Question: {sample.question}
     Answer:"""
     PROMPT = PromptTemplate(
         template=prompt_template, input_variables=["context", "question"]
