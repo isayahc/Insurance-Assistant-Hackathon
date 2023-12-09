@@ -11,4 +11,6 @@ license: mit
 pip_version: 23.3.1
 ---
 
+Chatbot that answers questions on insurance
+
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
