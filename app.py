@@ -153,7 +153,7 @@ css="""
 
 title = """
 <div style="text-align: center;max-width: 700px;">
-    <h1>Chat with PDF</h1>
+    <h1>Insurance Assistant 💼</h1>
     <p style="text-align: center;">Upload a .PDF from your computer, click the "Load PDF to LangChain" button, <br />
     when everything is ready, you can start asking questions about the pdf ;)</p>
 </div>
