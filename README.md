@@ -2,7 +2,7 @@
 title: Insurance Assistant
 emoji: 🏆
 colorFrom: indigo
-colorTo: yellow
+colorTo: pink
 sdk: gradio
 sdk_version: 4.8.0
 app_file: app.py
