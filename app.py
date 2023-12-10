@@ -34,11 +34,18 @@ dotenv.load_dotenv()
 
 
 text_splitter = CharacterTextSplitter(
-    chunk_size=350, 
+    chunk_size=350,
     chunk_overlap=0
     )
 
-# flan_ul2 = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta", model_kwargs={"temperature":0.1, "max_new_tokens":300})
+# flan_ul2 = HuggingFaceHub(
+#     repo_id="HuggingFaceH4/zephyr-7b-beta", 
+#     model_kwargs={
+#         "temperature":0.1, 
+#         "max_new_tokens":300
+#         }
+#         )
+
 # flan_ul2 = OpenAI()
 from langchain.chat_models import ChatOpenAI
 
@@ -50,7 +57,6 @@ flan_ul2 = chat = ChatOpenAI(
 )
 
 global qa
-
 
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 embeddings = CohereEmbeddings(
@@ -64,7 +70,6 @@ def loading_pdf():
     return "Loading..."
 def pdf_changes(pdf_doc):
 
-
     embeddings = CohereEmbeddings(
     model="embed-english-light-v3.0",
 
@@ -77,10 +82,9 @@ def pdf_changes(pdf_doc):
     retriever = db.as_retriever()
 
     memory = ConversationBufferMemory(
-        memory_key="chat_history", 
+        memory_key="chat_history",
         input_key="human_input"
         )
-    
 
 
     prompt = PromptTemplate(
