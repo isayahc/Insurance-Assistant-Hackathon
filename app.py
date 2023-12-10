@@ -96,7 +96,6 @@ def pdf_changes(pdf_doc):
             template=template
             )
 
-    chain_type_kwargs = {"prompt": prompt}
 
     global qa 
 
