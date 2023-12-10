@@ -34,7 +34,6 @@ global qa
 def loading_pdf():
     return "Loading..."
 def pdf_changes(pdf_doc):
-    # loader = OnlinePDFLoader(pdf_doc.name)
     embeddings = OpenAIEmbeddings()
     loader = PyPDFLoader(pdf_doc.name)
     documents = loader.load()
