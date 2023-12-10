@@ -14,9 +14,21 @@ from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 
 from langchain.document_loaders import PyPDFLoader
+from langchain.memory import VectorStoreRetrieverMemory
+
+from langchain.chains import RetrievalQAWithSourcesChain
+from langchain.memory import ConversationBufferMemory
+from langchain.embeddings import CohereEmbeddings
 
 
 from langchain.embeddings import HuggingFaceHubEmbeddings, OpenAIEmbeddings
+
+import dotenv
+
+import os
+
+dotenv.load_dotenv()
+
 
 
 text_splitter = CharacterTextSplitter(chunk_size=350, chunk_overlap=0)
@@ -27,6 +39,12 @@ flan_ul2 = OpenAI()
 global qa
 
 # embeddings = HuggingFaceHubEmbeddings()
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+embeddings = CohereEmbeddings(
+    model="embed-english-light-v3.0",
+    cohere_api_key=COHERE_API_KEY
+)
+           
 
 
 
@@ -34,48 +52,97 @@ global qa
 def loading_pdf():
     return "Loading..."
 def pdf_changes(pdf_doc):
-    embeddings = OpenAIEmbeddings()
+    # embeddings = OpenAIEmbeddings()
+    # embeddings = HuggingFaceHubEmbeddings()
+
+    embeddings = CohereEmbeddings(
+    model="embed-english-light-v3.0",
+    # cohere_api_key=COHERE_API_KEY
+)
+    
     loader = PyPDFLoader(pdf_doc.name)
     documents = loader.load()
     texts = text_splitter.split_documents(documents)
     db = Chroma.from_documents(texts, embeddings)
     retriever = db.as_retriever()
+    # memory = VectorStoreRetrieverMemory(retriever=retriever)
+    memory = ConversationBufferMemory(memory_key="chat_history", input_key="human_input")
     
-    prompt_template = """You have been given a pdf or pdfs. You must search these pdfs. 
-    If you don't know the answer, just say that you don't know, don't try to make up an answer.
-    Only answer the question.
+    # prompt_template = """You have been given a pdf or pdfs. You must search these pdfs. 
+    # If you don't know the answer, just say that you don't know, don't try to make up an answer.
+    # Only answer the question.
     
-    {context}
     
-    Question: {query}
-    Answer:"""
-    PROMPT = PromptTemplate(
-        template=prompt_template, input_variables=["context", "question"]
-    )
-    chain_type_kwargs = {"prompt": PROMPT}
+    # Question: {query}
+    # Answer:"""
+    # PROMPT = PromptTemplate(
+    #     template=prompt_template, input_variables=["context", "question"]
+    # )
+    # template = """You are a chatbot having a conversation with a human.\n\nGiven the following extracted parts of a long document and a question, create a final answer.\n\n{context}\n\n{chat_history}\nHuman: {human_input}\nChatbot:"""
+    template = """
+You are the friendly documentation buddy Arti, who helps the Human in using RAY, the open-source unified framework for scaling AI and Python applications.\
+    Use the following context (delimited by <ctx></ctx>) and the chat history (delimited by <hs></hs>) to answer the question :
+------
+<ctx>
+{context}
+</ctx>
+------
+<hs>
+{history}
+</hs>
+------
+{question}
+Answer:
+"""
+    prompt = PromptTemplate(input_variables=["chat_history", "human_input", "context"], template=template)
+    chain_type_kwargs = {"prompt": prompt}
     global qa 
-    qa = RetrievalQA.from_chain_type(
-        llm=flan_ul2, 
-        chain_type="stuff", 
-        retriever=retriever, 
-        return_source_documents=True,
-        chain_type_kwargs=chain_type_kwargs,
-    )
+    # qa = RetrievalQA.from_chain_type(
+    #     llm=flan_ul2, 
+    #     memory=memory,
+    #     chain_type="stuff", 
+    #     retriever=retriever, 
+    #     return_source_documents=True,
+    #     chain_type_kwargs=chain_type_kwargs,
+    # )
+
+    prompt = PromptTemplate(
+    input_variables=["history", "context", "question"],
+    template=template,
+)
+    memory = ConversationBufferMemory(memory_key="history", input_key="question")
+
+    qa = RetrievalQAWithSourcesChain.from_chain_type(llm=flan_ul2, retriever=retriever, return_source_documents=True, verbose=True, chain_type_kwargs={
+        "verbose": True,
+        "memory": memory,
+        "prompt": prompt,
+        "document_variable_name": "context"
+    }
+        )
+
     return "Ready"
 
 def add_text(history, text):
     history = history + [(text, None)]
     return history, ""
 
-def bot(history):
-    response = infer(history[-1][0])
-    history[-1][1] = response['result']
-    return history
+# def bot(history):
+#     response = infer(history[-1][0])
+#     history[-1][1] = response['result']
+#     return history
 
-def infer(question):
+def bot(history):
+    response = infer(history[-1][0], history)
+    sources = [doc.metadata.get("source") for doc in response['source_documents']]
+    src_list = '\n'.join(sources)
+    print_this = response['answer'] + "\n\n\n Sources: \n\n\n" + src_list
+
+def infer(question, history):
     
     query = question
-    result = qa({"query": query})
+    # result = qa({"query": query, "context":""})
+    # result = qa({"query": query, })
+    result = qa({"query": query, "history": history, "question": question})
 
     return result
 
