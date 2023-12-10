@@ -201,15 +201,16 @@ with gr.Blocks(css=css) as demo:
         queue=False
         )
     
-    question.submit
-    (add_text, 
+    question.submit(
+        add_text, 
      [
         chatbot, 
         question
       ], 
       [
           chatbot, 
-          question]
+          question
+          ]
           ).then(
         bot, 
         chatbot, 
