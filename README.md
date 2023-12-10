@@ -9,6 +9,7 @@ app_file: app.py
 pinned: false
 license: mit
 pip_version: 23.3.1
+python_version: 3.11.6
 ---
 
 Chatbot that answers questions on insurance
