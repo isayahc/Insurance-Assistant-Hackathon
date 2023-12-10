@@ -34,14 +34,22 @@ dotenv.load_dotenv()
 text_splitter = CharacterTextSplitter(chunk_size=350, chunk_overlap=0)
 
 # flan_ul2 = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta", model_kwargs={"temperature":0.1, "max_new_tokens":300})
-flan_ul2 = OpenAI()
+# flan_ul2 = OpenAI()
+from langchain.chat_models import ChatOpenAI
+
+flan_ul2 = chat = ChatOpenAI(
+    model_name='gpt-3.5-turbo-16k',
+    # temperature = self.config.llm.temperature,
+    # openai_api_key = self.config.llm.openai_api_key,         
+    # max_tokens=self.config.llm.max_tokens
+)
 
 global qa
 
 # embeddings = HuggingFaceHubEmbeddings()
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 embeddings = CohereEmbeddings(
-    model="embed-english-light-v3.0",
+    model="embed-english-v3.0",
     cohere_api_key=COHERE_API_KEY
 )
            
@@ -126,24 +134,26 @@ def add_text(history, text):
     history = history + [(text, None)]
     return history, ""
 
-# def bot(history):
-#     response = infer(history[-1][0])
-#     history[-1][1] = response['result']
-#     return history
-
 def bot(history):
-    response = infer(history[-1][0], history)
-    sources = [doc.metadata.get("source") for doc in response['source_documents']]
-    src_list = '\n'.join(sources)
-    print_this = response['answer'] + "\n\n\n Sources: \n\n\n" + src_list
+    response = infer(history[-1][0],"")
+    history[-1][1] = response['answer']
+    return history
 
-def infer(question, history):
+# def bot(history):
+#     response = infer(history[-1][0], history)
+#     sources = [doc.metadata.get("source") for doc in response['source_documents']]
+#     src_list = '\n'.join(sources)
+#     print_this = response['answer'] + "\n\n\n Sources: \n\n\n" + src_list
+#     return print_this
+
+def infer(question, history) -> dict:
     
     query = question
     # result = qa({"query": query, "context":""})
     # result = qa({"query": query, })
     result = qa({"query": query, "history": history, "question": question})
 
+    # result = result['answer']
     return result
 
 css="""
