@@ -115,7 +115,7 @@ def pdf_changes(pdf_doc):
         )
 
     qa = RetrievalQAWithSourcesChain.from_chain_type(
-        llm=flan_ul2, 
+        llm=llm, 
         retriever=retriever, 
         return_source_documents=True, 
         verbose=True, 
