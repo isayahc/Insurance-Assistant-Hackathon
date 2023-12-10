@@ -5,14 +5,21 @@ from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain.embeddings import CohereEmbeddings
+from langchain.schema.embeddings import Embeddings
+
+from utils.qa_utils import create_embeddings_from_pdf
+
+# from utils import create_embeddings_from_pdf
+
 from config import COHERE_API_KEY
+
 
 global qa
 from qa import qa
 
 
 
-def start_gradio(qa):
+def start_gradio(qa,embedding:Embeddings):
 
     def loading_pdf():
         return "Loading..."
@@ -20,20 +27,32 @@ def start_gradio(qa):
 
 
         # global qa
-        embeddings = CohereEmbeddings(
-            model="embed-english-v3.0",
-            cohere_api_key=COHERE_API_KEY
+        # embeddings = CohereEmbeddings(
+        #     model="embed-english-v3.0",
+        #     cohere_api_key=COHERE_API_KEY
+        # )
+        # db = Chroma.from_documents(texts, embeddings)
+        # db = Chroma()
+
+        db = create_embeddings_from_pdf(
+            pdf_doc,
+            embedding,
+            Chroma(),
+
+
         )
 
-        text_splitter = CharacterTextSplitter(
-            chunk_size=350,
-            chunk_overlap=0
-        )
+        # text_splitter = CharacterTextSplitter(
+        #     chunk_size=350,
+        #     chunk_overlap=0
+        # )
 
-        loader = PyPDFLoader(pdf_doc.name)
-        documents = loader.load()
-        texts = text_splitter.split_documents(documents)
-        db = Chroma.from_documents(texts, embeddings)
+        # loader = PyPDFLoader(pdf_doc.name)
+        # documents = loader.load()
+        # texts = text_splitter.split_documents(documents)
+        # db = Chroma.from_documents(texts, embeddings)
+
+
         retriever = db.as_retriever()
 
         qa.retriever = retriever
@@ -136,5 +155,9 @@ def start_gradio(qa):
 
 
 if __name__ == '__main__':
+    embeddings = CohereEmbeddings(
+        model="embed-english-v3.0",
+        cohere_api_key=COHERE_API_KEY
+    )
     demo = start_gradio(qa)
     demo.launch()

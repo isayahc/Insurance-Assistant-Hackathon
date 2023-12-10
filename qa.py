@@ -33,11 +33,12 @@ from config import COHERE_API_KEY
 
 from langchain.chat_models import ChatOpenAI
 
+
+
 llm= chat = ChatOpenAI(
     model_name='gpt-3.5-turbo-16k',
 
 )
-
 
 
 embeddings = CohereEmbeddings(
@@ -46,10 +47,6 @@ embeddings = CohereEmbeddings(
 )
 
 
-embeddings = CohereEmbeddings(
-model="embed-english-light-v3.0",
-
-)
 
 
 memory = ConversationBufferMemory(
@@ -68,22 +65,19 @@ prompt = PromptTemplate(
         )
 
 
-prompt = PromptTemplate(
-input_variables=[
-    "history", 
-    "context", 
-    "question"
-    ],
-template=template,
-)
-memory = ConversationBufferMemory(
-    memory_key="history", 
-    input_key="question"
-    )
+# prompt = PromptTemplate(
+# input_variables=[
+#     "history", 
+#     "context", 
+#     "question"
+#     ],
+# template=template,
+# )
+
 
 qa = RetrievalQAWithSourcesChain.from_chain_type(
     llm=llm, 
-    retriever=retriever(), 
+    # retriever=retriever(), 
     return_source_documents=True, 
     verbose=True, 
     chain_type_kwargs={
@@ -93,5 +87,3 @@ qa = RetrievalQAWithSourcesChain.from_chain_type(
         "document_variable_name": "context"
         }
     )
-
-def create_qa()
