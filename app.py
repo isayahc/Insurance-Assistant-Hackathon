@@ -4,21 +4,10 @@ from langchain.document_loaders import OnlinePDFLoader
 
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.prompts import PromptTemplate
+from langchain.llms import HuggingFaceHub
 
 # from langhchain.llms import openai
 from langchain.llms import OpenAI
-
-text_splitter = CharacterTextSplitter(chunk_size=350, chunk_overlap=0)
-
-from langchain.llms import HuggingFaceHub
-# flan_ul2 = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta", model_kwargs={"temperature":0.1, "max_new_tokens":300})
-flan_ul2 = OpenAI()
-
-global qa
-
-from langchain.embeddings import HuggingFaceHubEmbeddings, OpenAIEmbeddings
-# embeddings = HuggingFaceHubEmbeddings()
-embeddings = OpenAIEmbeddings()
 
 from langchain.vectorstores import Chroma
 
@@ -26,10 +15,27 @@ from langchain.chains import RetrievalQA
 
 from langchain.document_loaders import PyPDFLoader
 
+
+from langchain.embeddings import HuggingFaceHubEmbeddings, OpenAIEmbeddings
+
+
+text_splitter = CharacterTextSplitter(chunk_size=350, chunk_overlap=0)
+
+# flan_ul2 = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta", model_kwargs={"temperature":0.1, "max_new_tokens":300})
+flan_ul2 = OpenAI()
+
+global qa
+
+# embeddings = HuggingFaceHubEmbeddings()
+
+
+
+
 def loading_pdf():
     return "Loading..."
 def pdf_changes(pdf_doc):
     # loader = OnlinePDFLoader(pdf_doc.name)
+    embeddings = OpenAIEmbeddings()
     loader = PyPDFLoader(pdf_doc.name)
     documents = loader.load()
     texts = text_splitter.split_documents(documents)
@@ -42,7 +48,7 @@ def pdf_changes(pdf_doc):
     
     {context}
     
-    Question: {sample.question}
+    Question: {query}
     Answer:"""
     PROMPT = PromptTemplate(
         template=prompt_template, input_variables=["context", "question"]
