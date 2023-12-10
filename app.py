@@ -27,6 +27,8 @@ import dotenv
 
 import os
 
+from prompt_template import template
+
 dotenv.load_dotenv()
 
 
@@ -86,22 +88,7 @@ def pdf_changes(pdf_doc):
     # PROMPT = PromptTemplate(
     #     template=prompt_template, input_variables=["context", "question"]
     # )
-    # template = """You are a chatbot having a conversation with a human.\n\nGiven the following extracted parts of a long document and a question, create a final answer.\n\n{context}\n\n{chat_history}\nHuman: {human_input}\nChatbot:"""
-    template = """
-You are the friendly documentation buddy Arti, who helps the Human in using RAY, the open-source unified framework for scaling AI and Python applications.\
-    Use the following context (delimited by <ctx></ctx>) and the chat history (delimited by <hs></hs>) to answer the question :
-------
-<ctx>
-{context}
-</ctx>
-------
-<hs>
-{history}
-</hs>
-------
-{question}
-Answer:
-"""
+
     prompt = PromptTemplate(input_variables=["chat_history", "human_input", "context"], template=template)
     chain_type_kwargs = {"prompt": prompt}
     global qa 
