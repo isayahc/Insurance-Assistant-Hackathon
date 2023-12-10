@@ -27,7 +27,7 @@ import dotenv
 
 import os
 
-from prompt_template import template
+from prompt.prompt_template import template
 
 dotenv.load_dotenv()
 
@@ -38,7 +38,7 @@ text_splitter = CharacterTextSplitter(
     chunk_overlap=0
     )
 
-# flan_ul2 = HuggingFaceHub(
+# llm= HuggingFaceHub(
 #     repo_id="HuggingFaceH4/zephyr-7b-beta", 
 #     model_kwargs={
 #         "temperature":0.1, 
@@ -46,10 +46,10 @@ text_splitter = CharacterTextSplitter(
 #         }
 #         )
 
-# flan_ul2 = OpenAI()
+# llm= OpenAI()
 from langchain.chat_models import ChatOpenAI
 
-flan_ul2 = chat = ChatOpenAI(
+llm= chat = ChatOpenAI(
     model_name='gpt-3.5-turbo-16k',
     # temperature = self.config.llm.temperature,
     # openai_api_key = self.config.llm.openai_api_key,         
