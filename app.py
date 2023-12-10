@@ -11,21 +11,26 @@ from langchain.llms import OpenAI
 text_splitter = CharacterTextSplitter(chunk_size=350, chunk_overlap=0)
 
 from langchain.llms import HuggingFaceHub
-flan_ul2 = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta", model_kwargs={"temperature":0.1, "max_new_tokens":300})
-# flan_ul2 = OpenAI()
+# flan_ul2 = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta", model_kwargs={"temperature":0.1, "max_new_tokens":300})
+flan_ul2 = OpenAI()
 
 global qa
 
-from langchain.embeddings import HuggingFaceHubEmbeddings
-embeddings = HuggingFaceHubEmbeddings()
+from langchain.embeddings import HuggingFaceHubEmbeddings, OpenAIEmbeddings
+# embeddings = HuggingFaceHubEmbeddings()
+embeddings = OpenAIEmbeddings()
 
 from langchain.vectorstores import Chroma
 
 from langchain.chains import RetrievalQA
+
+from langchain.document_loaders import PyPDFLoader
+
 def loading_pdf():
     return "Loading..."
 def pdf_changes(pdf_doc):
-    loader = OnlinePDFLoader(pdf_doc.name)
+    # loader = OnlinePDFLoader(pdf_doc.name)
+    loader = PyPDFLoader(pdf_doc.name)
     documents = loader.load()
     texts = text_splitter.split_documents(documents)
     db = Chroma.from_documents(texts, embeddings)
@@ -85,9 +90,11 @@ title = """
 with gr.Blocks(css=css) as demo:
     with gr.Column(elem_id="col-container"):
         gr.HTML(title)
+        # with gr.Blocks() as demo:
         
         with gr.Column():
-            pdf_doc = gr.File(label="Load a pdf", file_types=['.pdf'], type="filepath") #try filepath for type if binary does not work
+            pdf_doc = gr.File()
+            # pdf_doc = gr.File(label="Load a pdf", file_types=['.pdf'], type="filepath") #try filepath for type if binary does not work
             with gr.Row():
                 langchain_status = gr.Textbox(label="Status", placeholder="", interactive=False)
                 load_pdf = gr.Button("Load pdf to langchain")
